@@ -24,9 +24,9 @@
                             {{ Form::label('banner', 'Banner') }}
                             <div class="input-group mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic-addon1">https://i.imgur.com/</span>
+                                    <span class="input-group-text" id="basic-addon1">https://imgur.com/</span>
                                 </div>
-                                {{ Form::text('banner', '', ['class' => 'form-control', 'placeholder' => 'Banner ID and extension']) }}
+                                {{ Form::text('banner', '', ['class' => 'form-control', 'placeholder' => 'Imgur image ID']) }}
                             </div>
                         </div>
                     </div>

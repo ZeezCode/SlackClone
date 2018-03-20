@@ -18,7 +18,9 @@
                             <div class="card-header">
                                 <h5 class="card-title mb-0">{{$server->name}}</h5>
                             </div>
-                            <img class="card-img-top" src="https://i.imgur.com/ZnAtrSN.jpg" alt="Server banner image">
+                            <div class="gray-bg">
+                                <img class="card-img-top server-banner-img" src="{{$server->banner}}" alt="Server banner image">
+                            </div>
                             <div class="card-body">
                                 <p class="card-text">{{$server->description}}</p>
                                 <a href="/server/{{$server->id}}" class="btn btn-primary">Connect</a>

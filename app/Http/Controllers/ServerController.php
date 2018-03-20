@@ -29,7 +29,7 @@ class ServerController extends Controller
         foreach($memberships as $membership)
             array_push($servers, $membership->server);
 
-        return view('pages.app.home')->with('servers', $servers);
+        return view('pages.app.index')->with('servers', $servers);
     }
 
     /**
@@ -60,11 +60,16 @@ class ServerController extends Controller
 
         $pass = $request->input('password');
 
+        $validateId = $request->input('banner');
+        if (!$validateId['isValid']) {
+            return back()->withInput()->withErrors(['Invalid banner image ID!']);
+        }
+
         $s = new Server;
         $s->name = $request->input('name');
         $s->description = $request->input('description');
         $s->owner_id = Auth::id();
-        $s->banner = $request->input('banner');
+        $s->banner = $validateId['link'];
         $s->public = ($request->input('public') ? true : false);
         $s->password = ($pass ? bcrypt($pass) : null);
         $s->save();

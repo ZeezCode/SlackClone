@@ -13,11 +13,13 @@
         <!-- Styles -->
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
         <link href="{{ asset('css/custom.css') . '?t=' . time() }}" rel="stylesheet">
+
+        @yield('style')
     </head>
     <body>
         <div id="app">
             @include('inc.navbar')
-            <main class="py-4">
+            <main class="pt-4">
                 @include('inc.messages')
                 @yield('content')
             </main>
