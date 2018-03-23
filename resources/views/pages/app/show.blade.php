@@ -31,11 +31,9 @@
                 -->
             </ul>
         </div>
-        <div id="chat-input-bar">
-            <form action="#" id="chat-form">
-                <input type="text" id="message" placeholder="Message" class="ml-3 mt-3" autocomplete="off" />
-            </form>
-        </div>
+        <form action="#" id="chat-form">
+            <input type="text" id="message" placeholder="Message" class="ml-3 mt-3" autocomplete="off" />
+        </form>
     </div>
 @endsection
 
