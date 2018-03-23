@@ -94,13 +94,13 @@ class ServerController extends Controller
         if ($server == null)
             return redirect('/server')->with('error', 'The specified server does not exist!');
 
-        $membership = ServerMembership::where('user_id', Auth::id())
-            ->where('server_id', $id)
-            ->get();
-        if (count($membership) == 0)
+        if (!isUserMemberOfServer(Auth::id(), $id))
             return redirect('/server')->withErrors(['You are not a member of this server!']);
 
-        return view('pages.app.show')->with('server', $server);
+        return view('pages.app.show')->with([
+            'server' => $server,
+            'channels' => $server->channels()->orderBy('order', 'ASC')->get(),
+        ]);
     }
 
     /**

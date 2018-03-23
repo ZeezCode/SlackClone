@@ -15,4 +15,8 @@ class Channel extends Model
     public function server() {
         return $this->belongsTo('App\Server');
     }
+
+    public function messages() {
+        return $this->hasMany('App\Message');
+    }
 }

@@ -41,3 +41,16 @@
         }
         return $result;
     }
+
+    /**
+     * Returns whether or not a user is a member of a server
+     * @param $userId
+     * @param $serverId
+     * @return bool
+     */
+    function isUserMemberOfServer($userId, $serverId) {
+        $membership = \App\ServerMembership::where('user_id', $userId)
+            ->where('server_id', $serverId)
+            ->get();
+        return count($membership) > 0;
+    }
