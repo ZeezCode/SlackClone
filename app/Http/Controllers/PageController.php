@@ -38,10 +38,14 @@ class PageController extends Controller
                     $messages = $channel->messages()->where('id', '>', $fromLast)->orderBy('id', 'ASC')->get();
                     $result['messages'] = [];
                     foreach ($messages as $message) {
+                        $timestamp = $message->created_at;
+                        $timestamp->setTimezone('America/New_York');
+                        $timestamp = date('m/d/Y \a\t g:i a', strtotime($timestamp));
                         array_push($result['messages'], [
-                            $message->id,
-                            htmlentities($message->user->name),
-                            nl2br(htmlentities($message->message)),
+                            'id' => $message->id,
+                            'name' => htmlentities($message->user->name),
+                            'message' => nl2br(htmlentities($message->message)),
+                            'created_at' => $timestamp,
                         ]);
                     }
                 }

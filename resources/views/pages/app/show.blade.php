@@ -44,35 +44,42 @@
 
         //on channel click
         function joinChannel(elem) {
-            //remove all messages in chat
+            //cancel if no change
+            if (elem.value === curChanId) return;
+
+            //remove messages from chat
             $('#chat-list').children().remove();
+
+            //set current channel
+            var oldChan = curChanId;
+            curChanId = elem.value;
 
             //reset latest message id
             lastMessageReceived = 0;
 
-            //set current channel
-            curChanId = elem.value;
-
-            //begin fetching latest messages
-            getLatestMessages();
+            //begin fetching latest messages if not already
+            if (oldChan === 0)
+                getLatestMessages();
         }
 
-        //on message submit
+        //when document's ready
         $(function() {
+            //on message submit
             $('#chat-form').on('submit', function(e) {
                 e.preventDefault(); //cancel form submit
+                var messageElement = $('#message');
+                var msg = messageElement.val(); //save message so we can reset input element
+                messageElement.val(''); //remove message from input element
 
                 if (isNaN(curChanId) || curChanId <= 0) {
                     $('#chat-list').append('<li class="list-group-item list-group-item-action bg-light">You are not currently in a channel!</li>');
                 } else { //Channel ID is set, attempt to submit message
-                    var messageElement = $('#message');
                     $.ajax({
                         type: 'GET',
                         url: '../../api/sendMessage',
-                        data: {channel:curChanId, message:messageElement.val()},
+                        data: {channel:curChanId, message:msg},
                         dataType: 'json',
                         success: function(data) {
-                            messageElement.val('');
                             if (!data.success) { //if error occurred while sending new message
                                 $('#chat-list').append(
                                     '<li class="list-group-item list-group-item-action bg-light">' +
@@ -80,7 +87,7 @@
                                         data.error +
                                     '</li>');
                             }
-                            //no else statement needed b/c getLatestMessages is already checking for new messages every 2 seconds
+                            //no else statement needed b/c getLatestMessages is already checking for new messages every x seconds
                         }
                     });
                 }
@@ -89,7 +96,7 @@
 
         //fetch latest messages in channel
         var getLatestMessages = function() {
-            if (curChanId != 0) { //if current channel is set
+            if (curChanId !== 0) { //if current channel is set
                 //fetch new messages and insert into chat
                 $.ajax({
                     type: 'GET',
@@ -104,15 +111,19 @@
                                 msg = data.messages[i];
                                 $('#chat-list').append(
                                     '<li class="list-group-item list-group-item-action bg-light">' +
-                                        '<strong>' + msg[1] + ':</strong><br />' + msg[2] +
-                                    '</li>'
+                                        '<strong>' + msg['name'] + ':</strong>' +
+                                        '<span class="float-right">' + msg['created_at'] + '</span>' +
+                                        '<br />' +
+                                        msg['message'] +
+                                        '</li>'
                                 );
-                                lastMessageReceived = msg[0];
+
+                                lastMessageReceived = msg['id'];
                             }
                         }
                     }
                 });
-                setTimeout(getLatestMessages, 2 * 1000); //fetch latest message every 2 seconds (2000 milliseconds)
+                setTimeout(getLatestMessages, 1000); //fetch latest message every x seconds
             }
         }
     </script>
