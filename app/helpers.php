@@ -54,3 +54,16 @@
             ->get();
         return count($membership) > 0;
     }
+
+    /**
+     * Returns the ID of an Imgur image from its direct link
+     * @param $link
+     * @return string
+     */
+    function getIdFromImgurLink($link) {
+        if (!str_contains($link, '/')) return '';
+        $firstSplit = explode('/', $link);
+
+        if (count($firstSplit) <= 1) return '';
+        return explode('.', end($firstSplit))[0];
+    }

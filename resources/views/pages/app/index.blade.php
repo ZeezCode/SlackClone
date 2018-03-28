@@ -24,13 +24,19 @@
                             <div class="card-body">
                                 <p class="card-text">{{$server->description}}</p>
                                 <a href="/server/{{$server->id}}" class="btn btn-primary">Connect</a>
+                                @if($server->owner_id == Auth::id())
+                                    <a href="/server/{{$server->id}}/edit/" class="btn btn-secondary float-right">Manage</a>
+                                @endif
                             </div>
                         </div>
                     </div>
                 @endforeach
             </div>
         @else
-            <h3 class="text-center">You are not currently a member of any servers.<br />Join one or create your own!</h3>
+            <h3 class="text-center">
+                You are not currently a member of any servers.<br />
+                Join one or create your own!
+            </h3>
         @endif
     </div>
 @endsection

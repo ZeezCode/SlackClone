@@ -19,7 +19,7 @@ html, body, main, #app {
 }
 
 .gray-bg {
-    background-color: #34373c;
+    background-color: #6A757E;
 }
 
 .sidebar {
@@ -58,4 +58,8 @@ html, body, main, #app {
 #chat-form input[type="text"] {
     height: 100%;
     width: 75%;
+}
+
+.list-group-item:focus {
+    outline: none;
 }

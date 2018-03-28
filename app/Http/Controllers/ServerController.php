@@ -60,7 +60,7 @@ class ServerController extends Controller
 
         $pass = $request->input('password');
 
-        $validateId = $request->input('banner');
+        $validateId = isImgurIdValid($request->input('banner'));
         if (!$validateId['isValid']) {
             return back()->withInput()->withErrors(['Invalid banner image ID!']);
         }
@@ -106,34 +106,99 @@ class ServerController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Server  $server
+     * @param  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Server $server)
+    public function edit($id)
     {
-        //
+        $server = Server::find($id);
+        if ($server == null)
+            return redirect('/server')->with('error', 'The specified server does not exist!');
+
+        if (!isUserMemberOfServer(Auth::id(), $id))
+            return redirect('/server')->withErrors(['You are not a member of this server!']);
+
+        if ($server->owner_id != Auth::id()) {
+            return redirect('/server')->withErrors(['You do not have permission to edit this server!']);
+        }
+
+        return view('pages.app.edit')->with([
+            'server' => $server,
+            'channels' => $server->channels()->orderBy('order', 'ASC')->get(),
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Server  $server
+     * @param  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Server $server)
+    public function update(Request $request, $id)
     {
-        //
+        $s = Server::find($id);
+        if ($s == null) {
+            return redirect('/server')->withErrors('The specified server does not exist!');
+        }
+
+        if ($s->owner_id != Auth::id()) {
+            return redirect('/server')->withErrors(['You do not have permission to edit this server!']);
+        }
+
+        $this->validate($request, [
+            'name' => 'required',
+            'banner' => 'required',
+            'description' => 'required',
+            'public' => 'sometimes|required|integer|min:0|max:1',
+            'password' => 'required_without:public',
+        ]);
+
+        $pass = $request->input('password');
+
+        $validateId = isImgurIdValid($request->input('banner'));
+        if (!$validateId['isValid']) {
+            return back()->withErrors(['Invalid banner image ID!']);
+        }
+
+        $s->name = $request->input('name');
+        $s->description = $request->input('description');
+        $s->banner = $validateId['link'];
+        $s->public = ($request->input('public') ? true : false);
+        if ($pass != null && !empty($pass))
+            $s->password = bcrypt($pass);
+        $s->save();
+
+        return redirect('/server')->with('success', 'You have successfully edited your server: ' . $s->name);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Server  $server
+     * @param  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Server $server)
+    public function destroy($id)
     {
-        //
+        $s = Server::find($id);
+        if ($s == null) {
+            return redirect('/server')->withErrors(['The specified server does not exist!']);
+        }
+
+        if ($s->owner_id != Auth::id()) {
+            return redirect('/server')->withErrors(['You do not have permission to edit this server!']);
+        }
+
+        foreach ($s->channels as $channel) {
+            foreach($channel->messages as $message)
+                $message->forceDelete(); //delete all messages in channel
+            $channel->forceDelete(); //delete all channels in server
+        }
+
+        foreach($s->memberships as $membership)
+            $membership->delete(); //delete all server memberships
+        $s->delete(); //soft delete server
+
+        return redirect('/server')->with('success', 'You have successfully deleted server: ' . $s->name);
     }
 }

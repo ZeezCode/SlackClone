@@ -7,7 +7,7 @@
 @section('content')
     <div class="container">
         <h1>
-            Create a Thread
+            Create Server
             <a href="/server" class="btn btn-primary float-right">Back</a>
         </h1>
         <div class="container">
@@ -45,7 +45,7 @@
                         {{ Form::checkbox('public', 1, null, ['class' => 'form-control']) }}
                     </div>
                 </div>
-                {{ Form::submit('Submit', ['class' => 'btn btn-primary btn-lg my-3']) }}
+                {{ Form::submit('Submit', ['class' => 'btn btn-primary my-3']) }}
             {!! Form::close() !!}
         </div>
     </div>

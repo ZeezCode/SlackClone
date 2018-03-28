@@ -39,13 +39,17 @@
 
 @section('script')
     <script>
-        var curChanId = 0;
-        var lastMessageReceived = 0;
-
+        var curChanId = 0; //current channel ID
+        var lastMessageReceived = 0;//ID of last message received in current channel
+        var originalTitle = document.title; //current and original title of page
+                                            // used for later altering w/o losing base title
         //on channel click
         function joinChannel(elem) {
             //cancel if no change
             if (elem.value === curChanId) return;
+
+            //change page title to include channel name
+            document.title = elem.innerText + ' - ' + originalTitle;
 
             //remove messages from chat
             $('#chat-list').children().remove();
@@ -56,6 +60,12 @@
 
             //reset latest message id
             lastMessageReceived = 0;
+
+            //remove active state from previous channel
+            $('button').removeClass('active');
+
+            //add active state to current channel
+            $(elem).addClass('active');
 
             //begin fetching latest messages if not already
             if (oldChan === 0)

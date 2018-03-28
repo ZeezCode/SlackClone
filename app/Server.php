@@ -22,4 +22,8 @@ class Server extends Model
     public function channels() {
         return $this->hasMany('App\Channel');
     }
+
+    public function memberships() {
+        return $this->hasMany('App\ServerMembership');
+    }
 }
