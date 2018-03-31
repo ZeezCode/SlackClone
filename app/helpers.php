@@ -67,3 +67,31 @@
         if (count($firstSplit) <= 1) return '';
         return explode('.', end($firstSplit))[0];
     }
+
+    /**
+     * Generates a random alphanumeric string of a given length
+     * @param $length
+     * @param string $keyspace
+     * @return string
+     */
+    function random_str($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+    {
+        $pieces = [];
+        $max = mb_strlen($keyspace, '8bit') - 1;
+        for ($i = 0; $i < $length; ++$i) {
+            $pieces []= $keyspace[random_int(0, $max)];
+        }
+        return implode('', $pieces);
+    }
+
+    /**
+     * Generate a new, random, unique string as an ID for server invites
+     * @return string
+     */
+    function getUniqueInviteString() {
+        $inviteId = random_str(32);
+        while(\App\Server::where('invite_id', $inviteId)->count() > 0) {
+            $inviteId = random_str(32);
+        }
+        return $inviteId;
+    }

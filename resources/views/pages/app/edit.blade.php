@@ -10,8 +10,36 @@
             <div class="col-md-6">
                 <h1>
                     Edit Server: {{str_limit($server->name, 12, '...')}}
+                    <button type="button" class="btn btn-info float-sm-right float-md-none float-lg-right" data-toggle="modal" data-target="#inviteToServerModal">
+                        Invite Link
+                    </button>
                 </h1>
-                {!! Form::open(['action' => ['ServerController@update', $server->id], 'method' => 'PUT']) !!}
+
+                <div class="modal fade" id="inviteToServerModal" tabindex="-1" role="dialog" aria-labelledby="inviteToServerLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="inviteToServerModalLabel">Server Invite Link</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    {{ Form::label('inviteLink', 'Invite Link') }}
+                                    {{ Form::text('inviteLink', env('APP_URL', 'https://slack.aidanmurphey.com') . '/invite/' . $server->invite_id, ['id' => 'inviteLinkInput', 'class' => 'form-control', 'readonly' => 'readonly']) }}
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="copyLink()">Copy Link</button>
+                            </div>
+                            {!! Form::close() !!}
+                        </div>
+                    </div>
+                </div>
+
+                {!! Form::open(['action' => ['ServerController@update', $server->id], 'method' => 'PUT', 'style' => 'clear: both;']) !!}
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -117,4 +145,22 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('script')
+    <script>
+        function copyLink() {
+            /* Get the text field */
+            var linkInput = $('#inviteLinkInput');
+
+            /* Select the text field */
+            linkInput.select();
+
+            /* Copy the text inside the text field */
+            document.execCommand("Copy");
+
+            /* Notify user of copied text */
+            linkInput.notify("You've copied the URL!", "success");
+        }
+    </script>
 @endsection

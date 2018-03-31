@@ -6,6 +6,7 @@ use App\Server;
 use App\ServerMembership;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class ServerController extends Controller
 {
@@ -65,15 +66,18 @@ class ServerController extends Controller
             return back()->withInput()->withErrors(['Invalid banner image ID!']);
         }
 
+        //create server
         $s = new Server;
         $s->name = $request->input('name');
         $s->description = $request->input('description');
         $s->owner_id = Auth::id();
+        $s->invite_id = getUniqueInviteString();
         $s->banner = $validateId['link'];
         $s->public = ($request->input('public') ? true : false);
         $s->password = ($pass ? bcrypt($pass) : null);
         $s->save();
 
+        //add owner as member of server
         $sm = new ServerMembership;
         $sm->user_id = Auth::id();
         $sm->server_id = $s->id;
@@ -200,5 +204,55 @@ class ServerController extends Controller
         $s->delete(); //soft delete server
 
         return redirect('/server')->with('success', 'You have successfully deleted server: ' . $s->name);
+    }
+
+    /**
+     * Show user an invitation to join given server
+     *
+     * @param  $invite_id
+     * @return \Illuminate\Http\Response
+     */
+    public function invite($invite_id) {
+        $server = Server::where('invite_id', $invite_id)->get();
+        if (count($server) == 0) {
+            return redirect('/server')->withErrors(['The specified invite ID does not exist!']);
+        }
+
+        $server = $server[0]; //get() returns array of results, give user first position to get actual server
+        if (isUserMemberOfServer(Auth::id(), $server->id)) {
+            return redirect('/server')->withErrors(['You are already a member of this server!']);
+        }
+
+        return view('pages.app.invite')->with('server', $server);
+    }
+
+    /**
+     * Send a request to join a server
+     * @param $id
+     * @return \Illuminate\Http\Response
+     */
+    public function join(Request $request, $id) {
+        $server = Server::find($id);
+        if ($server == null) {
+            return redirect('/server')->withErrors(['The specified server does not exist!']);
+        }
+
+        if ($server->public == 0) { //if server is private
+            $inputPass = $request->input('password');
+            if ($inputPass == null) { //if no password specified
+                return back()->withErrors(['You must specify a password for this server!']);
+            }
+
+            if (!Hash::check($inputPass, $server->password)) { //if password is incorrect
+                return back()->withInput()->withErrors(['Incorrect password specified!']);
+            }
+        }
+
+        $sm = new ServerMembership;
+        $sm->user_id = Auth::id();
+        $sm->server_id = $server->id;
+        $sm->save();
+
+        return redirect('/server')->with('success', 'You have successfully joined server: ' . $server->name);
     }
 }
