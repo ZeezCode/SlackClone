@@ -9,7 +9,7 @@
         <div class="row">
             <div class="col-md-6">
                 <h1>
-                    Edit Server: {{str_limit($server->name, 12, '...')}}
+                    Edit Server
                     <button type="button" class="btn btn-info float-sm-right float-md-none float-lg-right" data-toggle="modal" data-target="#inviteToServerModal">
                         Invite Link
                     </button>
@@ -68,7 +68,7 @@
                             {{ Form::checkbox('public', 1, $server->public == 1 ? true : null, ['class' => 'form-control']) }}
                         </div>
                     </div>
-                    {{ Form::submit('Submit', ['class' => 'btn btn-primary float-left my-3']) }}
+                    {{ Form::submit('Update', ['class' => 'btn btn-primary float-left my-3']) }}
                 {!! Form::close() !!}
 
                 {!! Form::open(['action' => ['ServerController@destroy', $server->id], 'method' => 'DELETE']) !!}
@@ -79,7 +79,7 @@
             <div class="col-md-6">
                 <h1>
                     Edit Channels
-                    <button type="button" class="btn btn-info float-sm-right float-md-none   float-lg-right" data-toggle="modal" data-target="#createChannelModal">
+                    <button type="button" class="btn btn-info float-sm-right float-md-none float-lg-right" data-toggle="modal" data-target="#createChannelModal">
                         Create Channel
                     </button>
                 </h1>
@@ -130,7 +130,7 @@
                                         {{ Form::label('order', 'Order') }}
                                         {{ Form::number('order', $channel->order, ['class' => 'form-control', 'min' => '1']) }}
                                     </div>
-                                    {{ Form::submit('Update', ['class' => 'btn btn-success float-left mb-1']) }}
+                                    {{ Form::submit('Update', ['class' => 'btn btn-primary float-left mb-1']) }}
                                 {!! Form::close() !!}
 
                                 {{ Form::open(['action' => ['ChannelController@destroy', $channel->id], 'method' => 'DELETE']) }}

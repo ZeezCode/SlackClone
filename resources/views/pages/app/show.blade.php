@@ -14,7 +14,7 @@
 
 @section('content')
     <div class="sidebar bg-white">
-        <h3 class="text-center my-3">{{$server->name}}</h3>
+        <h3 class="text-center my-3" style="font-size: 2.5vw;">{{$server->name}}</h3>
         <ul class="list-group list-group-flush">
             @foreach($channels as $channel)
                 <button type="button" value="{{$channel->id}}" class="list-group-item list-group-item-action" onclick="joinChannel(this)">
